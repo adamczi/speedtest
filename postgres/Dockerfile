@@ -9,6 +9,10 @@ ENV PGDATA /var/lib/postgresql/data
 
 ENV LANG en_US.utf8
 
+# RUN ["mkdir", "/docker-entrypoint-initdb.d"]
+
+
+
 RUN apk update && apk add build-base readline-dev openssl-dev zlib-dev libxml2-dev glib-lang wget gnupg ca-certificates libssl1.0 && \
     gpg --keyserver ipv4.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 && \
     gpg --list-keys --fingerprint --with-colons | sed -E -n -e 's/^fpr:::::::::([0-9A-F]+):$/\1:6:/p' | gpg --import-ownertrust && \
@@ -25,11 +29,20 @@ RUN apk update && apk add build-base readline-dev openssl-dev zlib-dev libxml2-d
     apk --purge del build-base openssl-dev zlib-dev libxml2-dev wget gnupg ca-certificates && \
     rm -r /tmp/postgresql-$PG_VERSION* /var/cache/apk/*
 
-VOLUME /var/lib/postgresql/data
+# ADD /docker-entrypoint.sh /docker-entrypoint-initdb.d/docker-entrypoint.sh
+# RUN chmod +x /docker-entrypoint-initdb.d
+# RUN chmod +x /docker-entrypoint-initdb.d/docker-entrypoint.sh
 
-COPY docker-entrypoint.sh /
+# VOLUME /var/lib/postgresql/data
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
+COPY docker-entrypoint.sh /docker-entrypoint-initdb.d/
+RUN chmod +x /docker-entrypoint-initdb.d/docker-entrypoint.sh
+
+
+
+ENTRYPOINT ["/docker-entrypoint-initdb.d/docker-entrypoint.sh"]
 
 EXPOSE 5432
+
 CMD ["postgres"]
+# CMD ["netstat", "t", "u", "l", "p", "n"]
