@@ -1,4 +1,4 @@
-import sys
+# import sys
 from flask import Flask, render_template, session, send_file, url_for, \
 request, abort, redirect
 from config import key_secret, userTable
@@ -9,7 +9,6 @@ import re
 import psycopg2
 import pg_simple
 from flask_bcrypt import Bcrypt
-from datetime import datetime
 
 
 # App start
@@ -35,11 +34,14 @@ def itWorks():
 def login():
     if request.method == 'GET':
         return render_template('login.html')
+    # Get username from form
     username = request.form['username']
+
+    # Get password from db
+    password = db.fetchone(userTable,
+               fields=['password'],
+               where=('name = %s', [username]))[0]
     try:
-        password = db.fetchone(userTable,
-                   fields=['password'],
-                   where=('name = %s', [username]))[0]
         # if bcrypt.check_password_hash(password, request.form['password']):
         if password == request.form['password']:
             session['username'] = request.form['username']

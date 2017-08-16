@@ -1,5 +1,7 @@
 from functools import wraps
-from flask import flash, redirect, url_for, session
+from flask import flash, redirect, url_for, session, request
+# from config import userTable
+# from db import db
 
 # Function for message flashing
 def messages(message):
