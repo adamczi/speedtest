@@ -1,6 +1,7 @@
 from functools import wraps
 from flask import flash, redirect, url_for, session, request
 import re
+import time
 # from config import userTable
 # from db import db
 
@@ -29,3 +30,7 @@ def loggedIn(func):
             return redirect(url_for('login'))
         return func(*args)
     return loginCheck
+
+def dateToJS(date):
+    """Converts a datetime object to the number of milliseconds since the unix epoch."""
+    return int(time.mktime(date.timetuple())) * 1000

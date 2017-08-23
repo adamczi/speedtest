@@ -1,8 +1,14 @@
 # import sys
+
+# parsing values from DB
+import json
+import datetime
+from decimal import *
+
 from flask import Flask, render_template, session, send_file, url_for, \
 request, abort, redirect
 from config import key_secret, userTable
-from utils import messages, validate, loggedIn
+from utils import messages, validate, loggedIn, dateToJS
 from db import pool, db
 import os
 import re
@@ -111,8 +117,24 @@ def stats():
                                  fields=['datetime','download','upload','ping'],
                                  where=('api = %s', [api]))
 
-    messages(statistics)
-    return render_template('stats.html')
+    # messages(statistics)
+
+    # Convert the dump to JS-friendly format
+    ups = []
+    downs = []
+    pings = []
+    for record in statistics:
+        date = dateToJS(record[0]) # TO DO: timezone
+        down = float(record[1])
+        up = float(record[2])
+        pi = float(record[3])
+
+        # Three different series of data
+        downs.append([date, down])
+        ups.append([date, up])
+        pings.append([date, pi])
+
+    return render_template('stats.html', ups = ups, downs = downs, pings = pings)
 
 
 @app.route('/index')
