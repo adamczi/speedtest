@@ -27,10 +27,11 @@ bcrypt = Bcrypt(app)
 @app.route("/")
 def itWorks():
     # with pg_simple.PgSimple() as db:
+    #     pw = bcrypt.generate_password_hash('dddd')
     #     db.insert("users",
-    #               {"name": 'marcin',
-    #                "password": 'asdf',
-    #                "api": '1'})
+    #               {"name": 'adam',
+    #                "password": pw,
+    #                "api": '3'})
     #     db.commit()
     return "aXQgd29ya3Mh=="
 
@@ -38,7 +39,9 @@ def itWorks():
 # route to login page
 @app.route("/login", methods=["POST", "GET"])
 def login():
+    # print session['username']
     if request.method == 'GET':
+        # session.clear()
         return render_template('login.html')
     # Get username from form
     username = request.form['username']
@@ -48,13 +51,16 @@ def login():
                fields=['password'],
                where=('name = %s', [username]))[0]
     try:
-        # if bcrypt.check_password_hash(password, request.form['password']):
-        if password == request.form['password']:
+        if bcrypt.check_password_hash(password, request.form['password']):
             session['username'] = request.form['username']
             return redirect(url_for('stats'))
 
     except TypeError as e:
-       pass
+        # Non-existent username
+        pass
+    except ValueError:
+        # Wrong salt, so wrong password
+        pass
 
     messages("401")
     return redirect(url_for('login'))
@@ -63,16 +69,16 @@ def login():
 @app.route('/logout')
 @loggedIn
 def logout():
-    # TO DO: can access pages after logout with back button
     session.clear()
-    return 'Logged out'
+    # TO DO: can access pages after logout with back button
+    return redirect(url_for('login'))
 
 
 # the API route to call from your script
 @app.route("/record/<timestamp>/<speedData>")
 def getValues(timestamp, speedData):
-    # key = requests.headers('api')
-    key = '1'
+    key = request.headers.get('api')
+    # key = '1'
     # save into the DB
     print timestamp
     print speedData
@@ -80,7 +86,7 @@ def getValues(timestamp, speedData):
     if result:
         return "thanks "+result+"!"
     else:
-        return 401
+        return '401'
 
 
 # Funtion which saves the data
@@ -115,7 +121,8 @@ def stats():
 
         statistics = db.fetchall('data',
                                  fields=['datetime','download','upload','ping'],
-                                 where=('api = %s', [api]))
+                                 where=('api = %s', [api]),
+                                 order=['datetime', 'ASC'])
 
     # messages(statistics)
 
