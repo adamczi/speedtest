@@ -6,9 +6,17 @@
 </head>
 <body>
 
-dddd
-<br>
-
+    stats
+    <br>
+    <div class="code">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+          {% for message in messages %}
+              {{ message }}
+          {% endfor %}
+      {% endif %}
+      {% endwith %}
+    </div>
 
 </body>
 </html>

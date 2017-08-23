@@ -57,6 +57,7 @@ def login():
 @app.route('/logout')
 @loggedIn
 def logout():
+    # TO DO: can access pages after logout with back button
     session.clear()
     return 'Logged out'
 
@@ -64,41 +65,60 @@ def logout():
 # the API route to call from your script
 @app.route("/record/<timestamp>/<speedData>")
 def getValues(timestamp, speedData):
-
+    # key = requests.headers('api')
+    key = '1'
     # save into the DB
-    saveToDatabase(timestamp, speedData)
-
-    return "it works!"
+    print timestamp
+    print speedData
+    result = saveToDatabase(timestamp, speedData, key)
+    if result:
+        return "thanks "+result+"!"
+    else:
+        return 401
 
 
 # Funtion which saves the data
 @validate
-def saveToDatabase(timestamp, speedData):
+def saveToDatabase(timestamp, speedData, key):
     # save to Postgres
     # insert into data values(1, (SELECT to_timestamp('07/08/2017,18:00:40',
     # 'DD-MM-YYYY,hh24:mi:ss')::timestamp without time zone),
     # 26.756, 23.4, 2.53);
-
     with pg_simple.PgSimple() as db:
-        db.insert("data",
-                  {"date": timestamp,
-                   "download": float(speedData[0]),
-                   "upload": float(speedData[1]),
-                   "ping": float(speedData[2])})
-        db.commit()
-    return
+        user = db.fetchone('users',
+                           fields=['name'],
+                           where=('api = %s', [key]))[0]
+        if user:
+            db.insert("data",
+                      {"datetime": timestamp,
+                       "download": float(speedData[0]),
+                       "upload": float(speedData[1]),
+                       "ping": float(speedData[2]),
+                       "api": key})
+            db.commit()
+        return user
 
 
 @app.route("/stats")
 @loggedIn
 def stats():
+    with pg_simple.PgSimple() as db:
+        api = db.fetchone('users',
+                           fields=['api'],
+                           where=('name = %s', [session['username']]))[0]
+
+        statistics = db.fetchall('data',
+                                 fields=['datetime','download','upload','ping'],
+                                 where=('api = %s', [api]))
+
+    messages(statistics)
     return render_template('stats.html')
 
 
 @app.route('/index')
 @loggedIn
 def index():
-    return send_file('./static/index.html')
+    return render_template('index.html')
 
 if __name__ == '__main__':
     # user = str(sys.argv[1])

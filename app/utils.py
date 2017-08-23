@@ -1,5 +1,6 @@
 from functools import wraps
 from flask import flash, redirect, url_for, session, request
+import re
 # from config import userTable
 # from db import db
 
@@ -16,7 +17,7 @@ def validate(func):
         values = re.findall('(\.*[0-9]+\.[0-9]+)', args[1])
         for i in xrange(3):
             values[i] = values[i][1:] if values[i].startswith('.') else values[i]
-        return func(args[0], values)
+        return func(args[0], values, args[2])
     return wrapper
 
 
