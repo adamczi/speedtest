@@ -3,3 +3,5 @@ db:
   environment:
     POSTGRES_PASSWORD: docker
     POSTGRES_USER: docker
+  volumes:
+      ./init.sql:/docker-entrypoint-initdb.d/init.sql

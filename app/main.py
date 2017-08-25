@@ -7,6 +7,7 @@ from decimal import *
 
 from flask import Flask, render_template, session, send_file, url_for, \
 request, abort, redirect
+from psycopg2 import DataError
 from config import key_secret, userTable
 from utils import messages, validate, loggedIn, dateToJS
 from db import pool, db
@@ -75,18 +76,17 @@ def logout():
 
 
 # the API route to call from your script
-@app.route("/record/<timestamp>/<speedData>")
+@app.route("/api/<timestamp>/<speedData>")
 def getValues(timestamp, speedData):
     key = request.headers.get('api')
     # key = '1'
+    
     # save into the DB
-    print timestamp
-    print speedData
     result = saveToDatabase(timestamp, speedData, key)
     if result:
-        return "thanks "+result+"!"
+        return '',result
     else:
-        return '401'
+        return 404
 
 
 # Funtion which saves the data
@@ -96,6 +96,7 @@ def saveToDatabase(timestamp, speedData, key):
     # insert into data values(1, (SELECT to_timestamp('07/08/2017,18:00:40',
     # 'DD-MM-YYYY,hh24:mi:ss')::timestamp without time zone),
     # 26.756, 23.4, 2.53);
+    # try:
     with pg_simple.PgSimple() as db:
         user = db.fetchone('users',
                            fields=['name'],
@@ -108,8 +109,7 @@ def saveToDatabase(timestamp, speedData, key):
                        "ping": float(speedData[2]),
                        "api": key})
             db.commit()
-        return user
-
+        return 201
 
 @app.route("/stats")
 @loggedIn
@@ -124,14 +124,12 @@ def stats():
                                  where=('api = %s', [api]),
                                  order=['datetime', 'ASC'])
 
-    # messages(statistics)
-
     # Convert the dump to JS-friendly format
     ups = []
     downs = []
     pings = []
     for record in statistics:
-        date = dateToJS(record[0]) # TO DO: timezone
+        date = dateToJS(record[0]) # TO DO: timezone correction (currently GMT)
         down = float(record[1])
         up = float(record[2])
         pi = float(record[3])
@@ -141,7 +139,8 @@ def stats():
         ups.append([date, up])
         pings.append([date, pi])
 
-    return render_template('stats.html', ups = ups, downs = downs, pings = pings)
+    return render_template('stats.html',
+                           ups = ups, downs = downs, pings = pings)
 
 
 @app.route('/index')
