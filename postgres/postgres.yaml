@@ -4,4 +4,5 @@ db:
     POSTGRES_PASSWORD: docker
     POSTGRES_USER: docker
   volumes:
-      ./init.sql:/docker-entrypoint-initdb.d/init.sql
+     - ./createDB.sql:/docker-entrypoint-initdb.d/createDB.sql
+     - ./createTables.sql:/docker-entrypoint-initdb.d/createTables.sql
