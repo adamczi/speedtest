@@ -37,23 +37,23 @@ def itWorks():
     return "aXQgd29ya3Mh=="
 
 
-# route to login page
+# Route to login page
 @app.route("/login", methods=["POST", "GET"])
 def login():
-    # print session['username']
     if request.method == 'GET':
-        # session.clear()
         return render_template('login.html')
+
     # Get username from form
     username = request.form['username']
 
-    # Get password from db
-    password = db.fetchone(userTable,
-               fields=['password'],
-               where=('name = %s', [username]))[0]
-    try:
-        if bcrypt.check_password_hash(password, request.form['password']):
-            session['username'] = request.form['username']
+    # Get authentication details
+    auths = db.fetchone(userTable,
+               fields=['password', 'api'],
+               where=('name = %s', [username]))
+
+    try: # Check password salt
+        if bcrypt.check_password_hash(auths.password, request.form['password']):
+            session['user'] = auths.api
             return redirect(url_for('stats'))
 
     except TypeError as e:
@@ -67,18 +67,17 @@ def login():
     return redirect(url_for('login'))
 
 
+# Clear session after logout
 @app.route('/logout')
 @loggedIn
 def logout():
     session.clear()
-    # TO DO: can access pages after logout with back button
     return redirect(url_for('login'))
 
 
-# the API route to call from your script
+# The API route to call from your script
 @app.route("/api", methods=["POST"])
 def getValues():
-    # key = request.headers.get('api')
     record = Record(timestamp = request.json.get('timestamp'),
                     download = request.json.get('download'),
                     upload = request.json.get('upload'),
@@ -88,9 +87,10 @@ def getValues():
 
     print record.timestamp, record.download, record.upload, record.ping, record.key, record.username
 
-    # speedData = [download, upload, ping]
-    # save into the DB
+    # Save into the DB
     result = saveToDatabase(record)
+
+    # Return the response code depending on result
     if result:
         return '',result
     else:
@@ -104,9 +104,8 @@ def saveToDatabase(record):
     # insert into data values(1, (SELECT to_timestamp('07/08/2017,18:00:40',
     # 'DD-MM-YYYY,hh24:mi:ss')::timestamp without time zone),
     # 26.756, 23.4, 2.53);
-    # try:
+
     with pg_simple.PgSimple() as db:
-        # if user:
         db.insert("data",
                   {"datetime": record.timestamp,
                    "download": record.download,
@@ -116,17 +115,14 @@ def saveToDatabase(record):
         db.commit()
     return 201
 
+# This route shows his/her graph to the logged in user
 @app.route("/stats")
 @loggedIn
 def stats():
     with pg_simple.PgSimple() as db:
-        api = db.fetchone('users',
-                           fields=['api'],
-                           where=('name = %s', [session['username']]))[0]
-
         statistics = db.fetchall('data',
                                  fields=['datetime','download','upload','ping'],
-                                 where=('api = %s', [api]),
+                                 where=('api = %s', [session['user']]),
                                  order=['datetime', 'ASC'])
 
     # Convert the dump to JS-friendly format
