@@ -1,0 +1,43 @@
+.outerSection {
+    padding-top: 10%;
+    display: table;
+    width: 60%;
+    margin:auto;
+}
+
+.middleSection {
+    display: table-cell;
+    vertical-align: middle;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.outerLoginAlert {
+    width: 20%;
+    text-align:center;
+    margin: 0 auto;
+}
+
+.innerLoginAlert {
+    position:absolute;
+    padding: 5%;
+    display: inline-block;
+}
+
+/*description*/
+#leftContent {
+    width: 50%;
+    float: left;
+    padding-right: 5%;
+}
+
+/*login*/
+#rightContent {
+    padding-top: 2rem;
+}
+
+#statsNavBar {
+    padding-left: 2%;
+    padding-right: 2%;
+    padding-bottom: 5%;
+}

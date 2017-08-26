@@ -53,14 +53,12 @@ def login():
 
     try: # Check password salt
         if bcrypt.check_password_hash(auths.password, request.form['password']):
-            session['user'] = auths.api
+            session['user'] = auths.api # API key in session
+            session['username'] = username # username in session
             return redirect(url_for('stats'))
 
-    except TypeError as e:
+    except (ValueError, TypeError, AttributeError) as e:
         # Non-existent username
-        pass
-    except ValueError:
-        # Wrong salt, so wrong password
         pass
 
     messages("401")
@@ -72,6 +70,7 @@ def login():
 @loggedIn
 def logout():
     session.clear()
+    messages("200")
     return redirect(url_for('login'))
 
 
@@ -100,11 +99,6 @@ def getValues():
 # Funtion which saves the data
 @validate
 def saveToDatabase(record):
-    # save to Postgres
-    # insert into data values(1, (SELECT to_timestamp('07/08/2017,18:00:40',
-    # 'DD-MM-YYYY,hh24:mi:ss')::timestamp without time zone),
-    # 26.756, 23.4, 2.53);
-
     with pg_simple.PgSimple() as db:
         db.insert("data",
                   {"datetime": record.timestamp,
@@ -141,13 +135,21 @@ def stats():
         pings.append([date, pi])
 
     return render_template('stats.html',
-                           ups = ups, downs = downs, pings = pings)
+                           ups = ups, downs = downs, pings = pings,
+                           username = session['username'])
 
 
-@app.route('/index')
+# To do: user panel with statistics, passwd change etc
+@app.route('/user/<username>')
 @loggedIn
-def index():
-    return render_template('index.html')
+def userPanel():
+    return render_template('userPanel.html', username = session['username'])
+
+# inactive test routing
+# @app.route('/index')
+# # @loggedIn
+# def index():
+#     return render_template('index.html')
 
 if __name__ == '__main__':
     # user = str(sys.argv[1])
