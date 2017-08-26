@@ -9,7 +9,7 @@ from flask import Flask, render_template, session, send_file, url_for, \
 request, abort, redirect
 from psycopg2 import DataError
 from config import key_secret, userTable
-from utils import messages, validate, loggedIn, dateToJS
+from utils import messages, validate, loggedIn, dateToJS, Record
 from db import pool, db
 import os
 import re
@@ -76,13 +76,21 @@ def logout():
 
 
 # the API route to call from your script
-@app.route("/api/<timestamp>/<speedData>")
-def getValues(timestamp, speedData):
-    key = request.headers.get('api')
-    # key = '1'
-    
+@app.route("/api", methods=["POST"])
+def getValues():
+    # key = request.headers.get('api')
+    record = Record(timestamp = request.json.get('timestamp'),
+                    download = request.json.get('download'),
+                    upload = request.json.get('upload'),
+                    ping = request.json.get('ping'),
+                    key = request.json.get('api'),
+                    username = request.json.get('username'))
+
+    print record.timestamp, record.download, record.upload, record.ping, record.key, record.username
+
+    # speedData = [download, upload, ping]
     # save into the DB
-    result = saveToDatabase(timestamp, speedData, key)
+    result = saveToDatabase(record)
     if result:
         return '',result
     else:
@@ -91,25 +99,22 @@ def getValues(timestamp, speedData):
 
 # Funtion which saves the data
 @validate
-def saveToDatabase(timestamp, speedData, key):
+def saveToDatabase(record):
     # save to Postgres
     # insert into data values(1, (SELECT to_timestamp('07/08/2017,18:00:40',
     # 'DD-MM-YYYY,hh24:mi:ss')::timestamp without time zone),
     # 26.756, 23.4, 2.53);
     # try:
     with pg_simple.PgSimple() as db:
-        user = db.fetchone('users',
-                           fields=['name'],
-                           where=('api = %s', [key]))[0]
-        if user:
-            db.insert("data",
-                      {"datetime": timestamp,
-                       "download": float(speedData[0]),
-                       "upload": float(speedData[1]),
-                       "ping": float(speedData[2]),
-                       "api": key})
-            db.commit()
-        return 201
+        # if user:
+        db.insert("data",
+                  {"datetime": record.timestamp,
+                   "download": record.download,
+                   "upload": record.upload,
+                   "ping": record.ping,
+                   "api": record.key})
+        db.commit()
+    return 201
 
 @app.route("/stats")
 @loggedIn
