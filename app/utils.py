@@ -2,7 +2,7 @@ from functools import wraps
 from flask import flash, redirect, url_for, session, request
 import re
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from db import db
 import pg_simple
 
@@ -34,32 +34,38 @@ def dateToJS(date):
 def validate(func):
     def wrapper(*args):
         arg = args[0] # Get the Record object since wrapper acquires a tuple
-        print arg.timestamp, arg.upload
-        # Parse datetime or completely reject request if incorrect (because
-        # where would you place it on a graph?)
-        try:
-            d = datetime.strptime(arg.timestamp, '%Y-%m-%y,%H:%M:%S')
-            if not isinstance(d,datetime):
-                print 'not date'
-                return 400
-        except (ValueError, TypeError):
-            print 'val type'
-            return 400
 
         # Authentication: check if username exists and correct API key is
         # provided
         providedKey = arg.key
         username = arg.username
-
         try:
             with pg_simple.PgSimple() as db:
                 key = db.fetchone('users',
                                    fields=['api'],
                                    where=('name = %s', [username]))[0][0] # delete the last zero once 24-char API keys are implemented
+                latest = db.fetchone('data',
+                                     fields=['datetime'],
+                                     where=('api = %s', [key]),
+                                     order=['datetime', 'DESC'])[0]
             if providedKey != key:
                 return 401
+                
         except TypeError:
             return 401
+
+
+        # Parse datetime or completely reject request if incorrect (because
+        # where would you place it on a graph?)
+        try:
+            d = datetime.strptime(arg.timestamp, '%Y-%m-%d,%H:%M:%S')
+            if not isinstance(d,datetime):
+                return 400
+            if d-latest < timedelta(minutes=15):
+                return 403
+        except (ValueError, TypeError):
+            return 400
+
 
         # The speed data validation
         # 0.0 values in case of an error will still indicate connection
