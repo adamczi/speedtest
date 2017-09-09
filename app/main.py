@@ -192,9 +192,3 @@ def page_not_found(e):
 # # @loggedIn
 # def index():
 #     return render_template('index.html')
-
-# if __name__ == '__main__':
-#     # user = str(sys.argv[1])
-#     # passwd = str(sys.argv[2])
-#
-#     app.run(host='0.0.0.0', debug=True)
