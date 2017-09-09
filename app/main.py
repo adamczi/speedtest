@@ -23,7 +23,7 @@ from flask_bcrypt import Bcrypt
 app = Flask(__name__)
 app.config.from_object(__name__)
 bcrypt = Bcrypt(app)
-
+app.secret_key = key_secret
 
 # just a random mainpage
 @app.route("/")
@@ -193,8 +193,8 @@ def page_not_found(e):
 # def index():
 #     return render_template('index.html')
 
-if __name__ == '__main__':
-    # user = str(sys.argv[1])
-    # passwd = str(sys.argv[2])
-    app.secret_key = key_secret
-    app.run(host='0.0.0.0', debug=True)
+# if __name__ == '__main__':
+#     # user = str(sys.argv[1])
+#     # passwd = str(sys.argv[2])
+#
+#     app.run(host='0.0.0.0', debug=True)

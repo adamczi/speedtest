@@ -1,4 +1,4 @@
 Flask==0.12.2
 Flask_Bcrypt==0.7.1
 pg_simple==0.2.3
-psycopg2==2.7.3
+psycopg2==2.7.3.1
