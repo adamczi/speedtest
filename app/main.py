@@ -9,7 +9,8 @@ from flask import Flask, render_template, session, send_file, url_for, \
 request, abort, redirect
 from psycopg2 import DataError
 from config import key_secret, userTable
-from utils import messages, validate, loggedIn, dateToJS, Record
+from utils import messages, validate, loggedIn, dateToJS, Record, whoLoggedIn, \
+alreadyLogged
 from db import pool, db
 import os
 import re
@@ -39,6 +40,7 @@ def itWorks():
 
 # Route to login page
 @app.route("/login", methods=["POST", "GET"])
+@alreadyLogged
 def login():
     if request.method == 'GET':
         return render_template('login.html')
@@ -141,9 +143,49 @@ def stats():
 
 # To do: user panel with statistics, passwd change etc
 @app.route('/user/<username>')
-@loggedIn
+@whoLoggedIn
 def userPanel():
+
+    if request.method == 'POST': # means someone wants to change password:
+        with pg_simple.PgSimple() as db:
+            # Fetch current password
+            auth = db.fetchone(userTable,
+                       fields=['password'],
+                       where=('name = %s', [session['username']]))
+            # If correct, generate hash for new one and update DB
+            if bcrypt.check_password_hash(auth.password,
+                                          request.form['oldPassword']):
+                np = bcrypt.generate_password_hash(request.form['newPassword'])
+                db.update(userTable,
+                          data={'password': bcrypt.generate_password_hash(np)},
+                          where=('name = %s', [session['username']]))
+                db.commit()
+                messages('200')
+            else: # Invalid old password (hashes mismatch)
+                messages('401')
+        return redirect(url_for('userPanel'))
+
     return render_template('userPanel.html', username = session['username'])
+
+
+@app.route('/manual')
+def manual():
+
+    if 'username' in session:
+        loggedIn = True
+        username = session['username']
+    else:
+        loggedIn = False
+        username = None
+
+    return render_template('manual.html',
+                           loggedIn = loggedIn,
+                           username = username)
+
+# Redirect to custom page in case of invalid URL
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 # inactive test routing
 # @app.route('/index')
@@ -155,4 +197,4 @@ if __name__ == '__main__':
     # user = str(sys.argv[1])
     # passwd = str(sys.argv[2])
     app.secret_key = key_secret
-    app.run(host='0.0.0.0', debug=True, port=80)
+    app.run(host='0.0.0.0', debug=True)

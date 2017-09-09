@@ -2,7 +2,7 @@
 <html lang="en-US">
 <head>
     <meta charset="utf-8">
-    <title>Test login markdown page</title>
+    <title>Login - speedtest</title>
     <script src="{{url_for('static', filename='document.min.js')}}"></script>
     <link rel="stylesheet" href="static/style.css" />
 </head>
@@ -14,36 +14,39 @@
 <div class="outerLoginAlert">
      <div class="innerLoginAlert">
      {% with messages = get_flashed_messages() %}
-      {% if messages %}
-          {% for message in messages %}
-              <div class="alert alert-dismissible alert-danger" style="text-align:center;">
-                  <button type="button" class="close" data-dismiss="alert">&times;</button>
-                  <strong>{{ message }}</strong>
-              </div>
-          {% endfor %}
-      {% endif %}
+          {% if messages %}
+              {% for message in messages %}
+                {% if message == '200' %}
+                  <div class="alert alert-dismissible alert-success" style="text-align:center;">
+                {% else %}
+                  <div class="alert alert-dismissible alert-danger" style="text-align:center;">
+                {% endif %}
+                      <button type="button" class="close" data-dismiss="alert">&times;</button>
+                      <strong>{{ message }}</strong>
+                  </div>
+              {% endfor %}
+          {% endif %}
       {% endwith %}
     </div>
 </div>
 
 
-<div class="outerSection">
-    <div class="middleSection">
+<div id="outerSection">
+    <div id="middleSection">
 
         <!-- description -->
-        <div id="leftContent">
+        <div class="leftContent">
             <div class="well well-lg">
-                <h5>Speedtest</h5>
+                <h5>speedtest</h5>
                 <p>This is a tool for monitoring your network bandwidth.
-                    Run the <a href="github.com">script</a> and login here to see
-                    your graph.</br>
-                    Details <a href="manual">here</a>.
+                    Run the script and login here to see your graph.</br>
+                    Details <a href="/manual">here</a>.
                 </p>
             </div>
         </div>
 
         <!-- login form -->
-        <div id="rightContent">
+        <div class="rightContent">
             <form class="form-horizontal" method="post", action="{{url_for('login')}}">
               <fieldset>
                 <div class="form-group">
@@ -62,6 +65,7 @@
                 <div class="form-group">
                   <div class="col-lg-10 col-lg-offset-2">
                     <button type="submit" class="btn btn-primary">login</button>
+                    <a class="btn btn-default" href="/register">register</a>
                   </div>
                 </div>
               </fieldset>
@@ -72,6 +76,13 @@
 </div>
 
 
+<script>
+
+setTimeout(function() {
+    $(".innerLoginAlert").fadeOut().empty();
+    }, 5000);
+
+</script>
 
 </body>
 </html>

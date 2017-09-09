@@ -2,15 +2,207 @@
 <html lang="en-US">
 <head>
     <meta charset="utf-8">
-    <title>Test login markdown page</title>
+    <title>Manual - speedtest</title>
     <script src="{{url_for('static', filename='document.min.js')}}"></script>
     <link rel="stylesheet" href="static/style.css" />
+    <link href="static/prism.css" rel="stylesheet" />
+    <script src="{{url_for('static', filename='prism.js')}}"></script>
 </head>
 <body>
+    <!-- Top bar containgin user link and help/logout buttons -->
+    <div id="statsNavBar">
+        {% if loggedIn %}
+            <h6 class="well well-sm" style="float:left"><a href="/user/{{username}}">user:{{username}}</a></h6>
+            <a href="/logout" class="btn btn-default" style="float:right">logout</a>
+            <a href="/manual" class="btn btn-default" style="float:right">help</a>
+        {% else %}
+            <h6 class="well well-sm" style="float:left"><a href="/login">back</a></h6>
+            <a href="/manual" class="btn btn-default" style="float:right">help</a>
+        {% endif %}
 
-<h2>manual</h2>
-<p>this is the manual</p>
+    </div>
 
+    <!-- Body of the site -->
+    <div>
+        <!-- Title -->
+        <div id="manualTitle">
+            <h2>manual</h2>
+            <p>This is a short documentation of Speedtest utility.</p>
+        </div>
+
+        <!-- Side menu -->
+        <div class="sideContent">
+            <div id="sidePanel">
+                <div class="list-group" id="sideList">
+                      <a id="aboutList" href="#" class="list-group-item active">About this tool</a>
+                      <a id="setupList" href="#" class="list-group-item">Setting up your device</a>
+                      <a id="resultsList" href="#" class="list-group-item">Getting the results</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- The main content text -->
+        <div class="centerContent">
+            <div id="contents">
+
+                <div id="aboutContent">
+                    <h3>about</h3>
+                    <p>This site is a tool that helps to aggregate the results
+                    of running seedtests. It provides an API that you can call
+                    and put your data in the database. The date can be later
+                    viewed in a form of graph or a table and downloaded for
+                    the purpose of your own processing.</p>
+                    <p>Check the <span class="text-primary">Setting up your
+                    device</span> section to find out how to get started.</p>
+                    <p>Source code available <a href="https://github.com/adamczi/speedtest">
+                    on my Github</a>.</p>
+
+                    <br>
+
+                    <h5>acknowledgements</h5>
+                    <p>The tool is built on an excellent Python package called
+                    <a href="https://github.com/sivel/speedtest-cli">speedtest-cli</a>.
+                    It uses <a href="http://www.speedtest.net">speedtest.net</a>
+                    measuring utility and parses the results.</p>
+                    <p>The site is built on <a href="http://flask.pocoo.org/">
+                    Flask</a> and <a href="http://aplib.github.io/markdown-site-template/">
+                    Markdown-site-template</a> package with Paper theme.</p>
+                    <p>Graphs are provided by <a href="https://www.highcharts.com/">
+                    Highcharts.com</a>.</p>
+                </div>
+
+
+
+
+
+                <div id="setupContent">
+                    <h3>setup</h3>
+                    <!-- <p class="text-primary" id="setup-general">1. General</p> -->
+                    <ol>
+                        <li class="text-primary"><a href="#setup-requirements">Requirements</a></li>
+                        <li class="text-primary"><a href="#setup-api">Using the API</a></li>
+                        <li class="text-primary"><a href="#setup-device">Running the tests</a></li>
+                    </ol></br>
+
+                    <div id="setup-requirements">
+                        <h5>requirements</h5>
+                        <p>First, <a href="/register" class="text-primary">
+                        register</a> on this page. After registration
+                        you'll receive your API key - the key can be later
+                        viewed in your user panel. You'll use this key to
+                        authenticate your API requests.</p>
+                        <p>The tool requires you to have Python 2.4 or higher
+                        installed along with <a href="https://github.com/sivel/speedtest-cli">
+                        speedtest-cli</a> utility:
+                        <pre><code class="language-bash">pip install speedtest-cli</code></pre>
+                        </p>
+                    </div>
+
+                    <div id="setup-api">
+                        <h5>using the API</h5>
+                        <p>The API is available at <span class="text-primary">
+                        ip_address/api</span>. Requests that are made should
+                        include JSON-type content in the header and be sent
+                        using POST method. Below is a simplified example of
+                        a request using curl:</p>
+
+                        <pre><code class="language-bash">curl -i -X POST -H "Content-Type: application/json" -d '{"some":"data"}' http://ip_addr/api</code></pre>
+
+                        <p> The data content has to include the following:</p>
+
+                        <pre><code class="language-bash">"timestamp":currentDate,
+"api":yourAPIkey,
+"download":downloadSpeed,
+"upload":uploadSpeed,
+"ping":pingTime,
+"username":yourUsername</code></pre>
+                        <p>The final curl request could therefore look like:</p>
+
+                        <pre><code class="language-bash">curl -iX POST -H "Content-Type: application/json" -d '{"timestamp":"1927-02-19,06:03:50","api":"randomvaluehere","upload":"10.25","download":"27.31","ping":"2.33", "username":"user123"'} http://ip_addr/api</code></pre>
+
+                        <p>and if the username exists and correct API key was
+                        provided, the record will be added to the database.</p>
+
+                        <p>The server will respond with a status code:
+                            <ul>
+                                <li>200 - success, record created</li>
+                                <li>203 - test and data validation success. No
+                                    record created</li>
+                                <li>400 - bad request, parameters' names might
+                                    be incorrect</li>
+                                <li>401 - unauthorized, API key and username
+                                    match doesn't exist</li>
+                            </ul>
+                            that you may log for your own purpose.
+                        </p>
+                    </div>
+
+                    <div id="setup-device">
+                        <h5>running the tests</h5>
+                        <p>In order to easily run tests periodically, a script
+                        for an automated run is needed. One, called
+                        <span class="text-primary">speedtest.sh</span> is
+                        provided within the repo. It is ready for use under UNIX
+                        systems (Open-WRT is preferred).<p>
+                        <p>Minor adjustments are needed: only substituting the
+                        username and password (note the quotes):
+                        <pre><code class="language-bash">username:"your_uname"
+api:"your_API_key"</code></pre>
+                        The other variable that may need to be changed is
+                        Python version and directory. This can be substituted
+                        in this line:
+                        <pre><code class="language-bash"># Query Speedtest
+python /usr/lib/python2.7/site-packages/speedtest-cli.py --no-pre-allocate --share > $log</code></pre>
+                        </p>
+
+                        <p>The script should be added to your job scheduler,
+                        like cron. Below is an example of how the tests could
+                        be scheduled to run every 6 hours:
+                        <pre><code class="language-bash">$ crontab -e
+
+0 0/6 * * * /root/speedtest.sh</code></pre>
+                        <span class="text-danger">Note: the server won't allow
+                        you to run tests more often than 15 minutes</span>
+                        </p>
+                    </div>
+                </div>
+
+
+                <div id="resultsContent">
+                    <h3>getting the results</h3>
+                    <p>After successfully creating a record in the database,
+                    you will see it immediately on the graph:
+                    </p>
+                    <img src="{{url_for('static', filename='graph1.png')}}">
+                    <p>Highcharts allow you to download the graph as JPG, PNG,
+                    PDF or SVG file. You may also zoom inside the graph.</p>
+                    <p>It'll be possible as well to download the data as a .csv
+                    table in your user panel.</p>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+
+<!-- Menu selection function -->
+<script>
+$(document).ready(function(){
+
+    // Hide all elements except for the main one
+    $('#setupContent, #resultsContent').hide();
+
+    $("#sideList a").each(function(index, element) {
+        $(this).click(function() {
+            // on selection hide all others and set only the selected one as active
+            $("#contents").children("div:eq('" + index + "')").show().siblings().hide();
+            $(this).siblings().removeClass("active");
+            $(this).addClass("active");
+        });
+    });
+});
+</script>
 
 
 

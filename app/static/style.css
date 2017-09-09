@@ -1,39 +1,80 @@
-.outerSection {
+/*left side of the page*/
+.leftContent {
+    width: 50%;
+    float: left;
+    padding-right: 5%;
+}
+
+/*right side of the page*/
+.rightContent {
+    padding-top: 2rem;
+}
+
+.sideContent {
+    width: 30%;
+    height: 100%;
+    float: left;
+}
+
+.centerContent {
+
+}
+
+
+/*login page sections to help to organize left/right placements*/
+#outerSection {
     padding-top: 10%;
     display: table;
     width: 60%;
     margin:auto;
 }
-
-.middleSection {
+#middleSection {
     display: table-cell;
     vertical-align: middle;
     margin-left: auto;
     margin-right: auto;
 }
 
+
+/*classes refering to status box above login form*/
 .outerLoginAlert {
     width: 20%;
     text-align:center;
     margin: 0 auto;
 }
-
 .innerLoginAlert {
     position:absolute;
     padding: 5%;
     display: inline-block;
 }
 
-/*description*/
-#leftContent {
-    width: 50%;
+.404 {
+    width: 30%;
     float: left;
     padding-right: 5%;
 }
 
-/*login*/
-#rightContent {
-    padding-top: 2rem;
+#sidePanel {
+    padding-left: 5%;
+    padding-top: 5%;
+    width: 25rem;
+}
+
+#contents {
+    width: 70%;
+    padding-left: 30%;
+}
+
+#manualTitle {
+    padding-left: 2%;
+    padding-bottom: 1%;
+    width: 20%;
+}
+
+img {
+    max-width: 100%;
+    max-height: 100%;
+    /*object-fit: contain;*/
 }
 
 #statsNavBar {

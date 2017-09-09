@@ -34,14 +34,16 @@ def dateToJS(date):
 def validate(func):
     def wrapper(*args):
         arg = args[0] # Get the Record object since wrapper acquires a tuple
-
+        print arg.timestamp, arg.upload
         # Parse datetime or completely reject request if incorrect (because
         # where would you place it on a graph?)
         try:
-            d = datetime.strptime(arg.timestamp, '%Y-%m-%d,%H:%M:%S')
+            d = datetime.strptime(arg.timestamp, '%Y-%m-%y,%H:%M:%S')
             if not isinstance(d,datetime):
+                print 'not date'
                 return 400
         except (ValueError, TypeError):
+            print 'val type'
             return 400
 
         # Authentication: check if username exists and correct API key is
@@ -90,5 +92,24 @@ def loggedIn(func):
     def loginCheck(*args):
         if 'user' not in session:
             return redirect(url_for('login'))
+        return func(*args)
+    return loginCheck
+
+def alreadyLogged(func):
+    @wraps(func)
+    def loginCheck(*args):
+        if 'user' in session:
+            return redirect(url_for('stats'))
+        return func(*args)
+    return loginCheck
+
+
+# Decorator for user authentication when accessing user panel
+# The panel is available only to current logged in user
+def whoLoggedIn(func):
+    @wraps(func)
+    def loginCheck(username, *args):
+        if 'username' not in session or username != session['username']:
+            return redirect(url_for('stats'))
         return func(*args)
     return loginCheck

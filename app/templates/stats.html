@@ -9,14 +9,15 @@
     <link rel="stylesheet" href="static/style.css" />
 
     <meta charset="utf-8">
-    <title>stats page</title>
+    <title>Stats - speedtest</title>
 </head>
 <body>
 
 
     <div id="statsNavBar">
         <h6 class="well well-sm" style="float:left"><a href="/user/{{username}}">user:{{username}}</a></h6>
-        <a href="/logout" class="btn btn-default" style="float:right">logout<a/>
+        <a href="/logout" class="btn btn-default" style="float:right">logout</a>
+        <a href="/manual" class="btn btn-default" style="float:right">help</a>
     </div>
 
     <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto">
@@ -42,6 +43,9 @@
                 }
             },
             plotOptions: {
+                series: {
+                    fillOpacity: 0.25
+                },
 
                 area: {
                     marker: {
@@ -74,17 +78,17 @@
                 type: 'area',
                 name: 'Download',
                 data: daneDown,
-                color: 'lightgreen',
+                color: 'rgba(25, 250, 0, 0.5)',
             }, {
                 type: 'area',
                 name: 'Upload',
                 data: daneUp,
-                color: 'lightblue',
+                color: 'rgba(0, 112, 250, 0.3)',
             }, {
                 type: 'line',
                 name: 'Ping',
                 data: danePing,
-                color: 'red'
+                color: 'rgba(250, 0, 0, 1)',
             }]
         });
 
