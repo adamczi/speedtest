@@ -50,7 +50,7 @@ def validate(func):
                                      order=['datetime', 'DESC'])[0]
             if providedKey != key:
                 return 401
-                
+
         except TypeError:
             return 401
 
@@ -100,6 +100,7 @@ def loggedIn(func):
             return redirect(url_for('login'))
         return func(*args)
     return loginCheck
+
 
 def alreadyLogged(func):
     @wraps(func)
