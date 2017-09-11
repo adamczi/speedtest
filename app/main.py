@@ -27,13 +27,11 @@ app.debug = DEBUG
 from auth import authentication
 app.register_blueprint(authentication)
 
-from flask_bcrypt import Bcrypt
-bcrypt = Bcrypt(app)
-
 # just a random mainpage
 @app.route("/")
 def itWorks():
     return "aXQgd29ya3Mh=="
+    # return url_for('authentication.login')
 
 
 # The API route to call from your script

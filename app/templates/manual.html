@@ -10,7 +10,7 @@
 </head>
 <body>
     <!-- Top bar containgin user link and help/logout buttons -->
-    <div id="statsNavBar">
+    <div id="stats-nav-bar">
         {% if loggedIn %}
             <h6 class="well well-sm" style="float:left"><a href="/user/{{username}}">user:{{username}}</a></h6>
             <a href="/logout" class="btn btn-default" style="float:right">logout</a>
@@ -25,27 +25,27 @@
     <!-- Body of the site -->
     <div>
         <!-- Title -->
-        <div id="manualTitle">
+        <div id="page-title">
             <h2>manual</h2>
-            <p>This is a short documentation of Speedtest utility.</p>
+            <p>this is a short documentation of the speedtest utility. get started here.</p>
         </div>
 
         <!-- Side menu -->
-        <div class="sideContent">
-            <div id="sidePanel">
-                <div class="list-group" id="sideList">
-                      <a id="aboutList" href="#" class="list-group-item active">About this tool</a>
-                      <a id="setupList" href="#" class="list-group-item">Setting up your device</a>
-                      <a id="resultsList" href="#" class="list-group-item">Getting the results</a>
+        <div class="side-content">
+            <div id="side-panel">
+                <div class="list-group" id="side-list">
+                      <a id="about-list" href="#" class="list-group-item active">about this tool</a>
+                      <a id="setup-list" href="#" class="list-group-item">setting up your device</a>
+                      <a id="results-list" href="#" class="list-group-item">getting the results</a>
                 </div>
             </div>
         </div>
 
         <!-- The main content text -->
-        <div class="centerContent">
+        <div>
             <div id="contents">
 
-                <div id="aboutContent">
+                <div id="about-content">
                     <h3>about</h3>
                     <p>This site is a tool that helps to aggregate the results
                     of running seedtests. It provides an API that you can call
@@ -59,7 +59,7 @@
 
                     <br>
 
-                    <h5>acknowledgements</h5>
+                    <h5>built on</h5>
                     <p>The tool is built on an excellent Python package called
                     <a href="https://github.com/sivel/speedtest-cli">speedtest-cli</a>.
                     It uses <a href="http://www.speedtest.net">speedtest.net</a>
@@ -75,7 +75,7 @@
 
 
 
-                <div id="setupContent">
+                <div id="setup-content">
                     <h3>setup</h3>
                     <!-- <p class="text-primary" id="setup-general">1. General</p> -->
                     <ol>
@@ -143,8 +143,8 @@
                         <p>In order to easily run tests periodically, a script
                         for an automated run is needed. One, called
                         <span class="text-primary">speedtest.sh</span> is
-                        provided within the repo. It is ready for use under UNIX
-                        systems (Open-WRT is preferred).<p>
+                        provided within the repo. It is ready for use under
+                        Open-WRT systems.<p>
                         <p>Minor adjustments are needed: only substituting the
                         username and password (note the quotes):
                         <pre><code class="language-bash">username:"your_uname"
@@ -163,13 +163,13 @@ python /usr/lib/python2.7/site-packages/speedtest-cli.py --no-pre-allocate --sha
 
 0 0/6 * * * /root/speedtest.sh</code></pre>
                         <span class="text-danger">Note: the server won't allow
-                        you to run tests more often than 15 minutes</span>
+                        you to save tests more often than 15 minutes</span>
                         </p>
                     </div>
                 </div>
 
 
-                <div id="resultsContent">
+                <div id="results-content">
                     <h3>getting the results</h3>
                     <p>After successfully creating a record in the database,
                     you will see it immediately on the graph:
@@ -192,9 +192,9 @@ python /usr/lib/python2.7/site-packages/speedtest-cli.py --no-pre-allocate --sha
 $(document).ready(function(){
 
     // Hide all elements except for the main one
-    $('#setupContent, #resultsContent').hide();
+    $('#setup-content, #results-content').hide();
 
-    $("#sideList a").each(function(index, element) {
+    $("#side-list a").each(function(index, element) {
         $(this).click(function() {
             // on selection hide all others and set only the selected one as active
             $("#contents").children("div:eq('" + index + "')").show().siblings().hide();

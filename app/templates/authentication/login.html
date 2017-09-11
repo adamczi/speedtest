@@ -11,8 +11,8 @@
 
 <!-- alert window -->
 <!-- to do: different color depending on status code -->
-<div class="outerLoginAlert">
-     <div class="innerLoginAlert">
+<div class="outer-login-alert">
+     <div class="inner-login-alert">
      {% with messages = get_flashed_messages() %}
           {% if messages %}
               {% for message in messages %}
@@ -31,11 +31,11 @@
 </div>
 
 
-<div id="outerSection">
-    <div id="middleSection">
+<div id="outer-section">
+    <div id="middle-section">
 
         <!-- description -->
-        <div class="leftContent">
+        <div class="left-content">
             <div class="well well-lg">
                 <h5>speedtest</h5>
                 <p>This is a tool for monitoring your network bandwidth.
@@ -46,7 +46,7 @@
         </div>
 
         <!-- login form -->
-        <div class="rightContent">
+        <div class="right-content">
             <form class="form-horizontal" method="post", action="{{url_for('authentication.login')}}">
               <fieldset>
                 <div class="form-group">
@@ -79,7 +79,7 @@
 <script>
 
 setTimeout(function() {
-    $(".innerLoginAlert").fadeOut().empty();
+    $(".inner-login-alert").fadeOut().empty();
     }, 5000);
 
 </script>

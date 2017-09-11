@@ -97,7 +97,7 @@ def loggedIn(func):
     @wraps(func)
     def loginCheck(*args):
         if 'user' not in session:
-            return redirect(url_for('login'))
+            return redirect(url_for('authentication.login'))
         return func(*args)
     return loginCheck
 

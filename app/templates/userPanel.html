@@ -6,14 +6,166 @@
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="{{url_for('static', filename='document.min.js')}}"></script>
-    <link rel="stylesheet" href="static/style.css" />
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}" />
 
     <meta charset="utf-8">
     <title>{{username}} - user panel</title>
 </head>
 <body>
 
-asdf userpanel {{username}}
+    <!-- Top bar containgin user link and help/logout buttons -->
+    <div id="stats-nav-bar">
+        {% if loggedIn %}
+            <h6 class="well well-sm" style="float:left"><a href="/user/{{username}}">user:{{username}}</a></h6>
+            <a href="/logout" class="btn btn-default" style="float:right">logout</a>
+            <a href="/manual" class="btn btn-default" style="float:right">help</a>
+        {% else %}
+            <h6 class="well well-sm" style="float:left"><a href="/login">back</a></h6>
+            <a href="/manual" class="btn btn-default" style="float:right">help</a>
+        {% endif %}
+
+    </div>
+
+
+    <div>
+        <!-- Title -->
+        <div id="page-title">
+            <h2>user panel</h2>
+            <p>{{username}}, this is your user panel. get some details here or change your account's settings.  </p>
+        </div>
+
+        <!-- Side menu -->
+        <div class="side-content">
+            <div id="side-panel">
+                <div class="list-group" id="side-list">
+                      <a id="info-list" href="#" class="list-group-item active">info</a>
+                      <a id="latest-list" href="#" class="list-group-item">latest records</a>
+                      <a id="account-list" href="#" class="list-group-item">account</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- The main content text -->
+        <div class="center-content">
+            <div id="userpanel-info">
+                <div id="table-layout">
+
+                    <div class="user-panel-square">
+                        <div class="well">
+                            <p>records: {{amount}}</p>
+                            <p>first record: {{startDate}}</p>
+                            <p>last record: {{lastDate}}</p>
+                            <p><a href="#latest-records">latest records</a></p>
+                        </div>
+                    </div>
+
+                    <div class="user-panel-square">
+                        <div class="well">
+                            <p>last week average</p>
+                            <p>download: {{av_download}}</p>
+                            <p>upload: {{av_upload}}</p>
+                            <p>ping: {{av_ping}}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="table-layout">
+                    <div class="user-panel-square">
+                        <div class="well">
+                            Look, I'm in a well!
+                        </div>
+                    </div>
+
+                    <div class="user-panel-square">
+                        <div class="well">
+                            <p>IP: {{ip_addr}}</p>
+                            <p>Geolocation:</p>
+                            <p>{{geolocation_1}}</p>
+                            <p>{{geolocation_2}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="userpanel-latest-records">
+                <!-- insert some vue based table script with last week's postgres data -->
+
+            </div>
+
+
+
+            <div id="userpanel-account">
+                <div id="table-layout">
+
+                    <div class="user-panel-square">
+                        <div class="well">
+                            <p>account name: {{username}}</p>
+                            <p>register date: {{registerDate}}</p>
+                            <p>API key: {{key}}</p>
+                            <p></p>
+                        </div>
+                    </div>
+
+                    <div class="user-panel-square">
+                        <div class="well">
+                            <p>change password:</p>
+                            <p>
+                                <div class="form-group">
+                                  <div class="col-lg-10">
+                                    <input class="form-control" id="inputEmail" placeholder="old password" type="text">
+                                  </div>
+                                </div>
+                            </p>
+                            <p>
+                                <div class="form-group">
+                                  <div class="col-lg-10">
+                                    <input class="form-control" id="inputEmail" placeholder="new password" type="text">
+                                  </div>
+                                </div>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="table-layout">
+                    <div class="user-panel-square">
+                        <div class="well">
+                            Look, I'm in a well!
+                        </div>
+                    </div>
+
+                    <div class="user-panel-square">
+                        <div class="well">
+                            <p>erase your data here:</p>
+                            <p onclick="alert('not');" class="btn btn-danger">erase</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+<!-- Menu selection function -->
+<script>
+$(document).ready(function(){
+
+    // Hide all elements except for the main one
+    $('#userpanel-latest-records, #userpanel-account').hide();
+
+    $("#side-list a").each(function(index, element) {
+        $(this).click(function() {
+            // on selection hide all others and set only the selected one as active
+            $(".center-content").children("div:eq('" + index + "')").show().siblings().hide();
+            $(this).siblings().removeClass("active");
+            $(this).addClass("active");
+        });
+    });
+});
+</script>
 
 </body>
 </html>
