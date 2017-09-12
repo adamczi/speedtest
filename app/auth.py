@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, session, request, redirect, \
 current_app, url_for
 from flask_bcrypt import Bcrypt
+import pg_simple
 from utils import alreadyLogged, messages, loggedIn
-from db import db
 from config import userTable
 
 authentication = Blueprint('authentication',
@@ -22,9 +22,10 @@ def login():
     username = request.form['username']
 
     # Get authentication details
-    auths = db.fetchone(userTable,
-               fields=['password', 'api'],
-               where=('name = %s', [username]))
+    with pg_simple.PgSimple() as db:
+        auths = db.fetchone(userTable,
+                   fields=['password', 'api'],
+                   where=('name = %s', [username]))
 
     try: # Check password salt
         if bcrypt.check_password_hash(auths.password, request.form['password']):
@@ -53,7 +54,7 @@ def logout():
 @loggedIn
 def passwordChange():
     bcrypt = Bcrypt(current_app)
-    
+
     if request.method == 'POST': # means someone wants to change password:
         with pg_simple.PgSimple() as db:
             # Fetch current password

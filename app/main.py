@@ -6,11 +6,12 @@ request, abort, redirect
 import json
 import datetime
 from decimal import *
+# from werkzeug.contrib.cache import SimpleCache
 
 from psycopg2 import DataError
 from config import SECRET_KEY, DEBUG
-from utils import messages, validate, loggedIn, dateToJS, Record, whoLoggedIn
-from db import db
+from utils import messages, validate, loggedIn, Record, whoLoggedIn
+from query import query, cache
 import os
 import re
 import psycopg2
@@ -22,16 +23,15 @@ app.config.from_object(__name__)
 app.secret_key = SECRET_KEY
 app.debug = DEBUG
 
-
 # Blueprints
 from auth import authentication
 app.register_blueprint(authentication)
+
 
 # just a random mainpage
 @app.route("/")
 def itWorks():
     return "aXQgd29ya3Mh=="
-    # return url_for('authentication.login')
 
 
 # The API route to call from your script
@@ -73,38 +73,22 @@ def saveToDatabase(record):
 @app.route("/stats")
 @loggedIn
 def stats():
-    with pg_simple.PgSimple() as db:
-        statistics = db.fetchall('data',
-                                 fields=['datetime','download','upload','ping'],
-                                 where=('api = %s', [session['user']]),
-                                 order=['datetime', 'ASC'])
+    if cache.get('results') is None and 'refresh' not in session:
+        query(session['user'])
 
-    # Convert the dump to JS-friendly format
-    ups = []
-    downs = []
-    pings = []
-    for record in statistics:
-        date = dateToJS(record[0]) # TO DO: timezone correction (currently GMT)
-        down = float(record[1])
-        up = float(record[2])
-        pi = float(record[3])
+    c = cache.get('results')
 
-        # Three different series of data
-        downs.append([date, down])
-        ups.append([date, up])
-        pings.append([date, pi])
-
-    return render_template('stats.html',
-                           ups = ups, downs = downs, pings = pings,
-                           username = session['username'])
+    return render_template('stats.html', downs = c[0], ups = c[1],
+                           pings = c[2], username = session['username'])
 
 
 # To do: user panel with statistics, passwd change etc
 @app.route('/user/<username>')
 @whoLoggedIn
 def userPanel():
-
-    return render_template('userPanel.html', username = session['username'])
+    c = cache.get('results')
+    return render_template('userPanel.html', downs = c[0], ups = c[1],
+                           pings = c[2], username = session['username'])
 
 
 @app.route('/manual')
@@ -124,9 +108,3 @@ def manual():
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
-
-# inactive test routing
-# @app.route('/index')
-# # @loggedIn
-# def index():
-#     return render_template('index.html')
