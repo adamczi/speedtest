@@ -1,6 +1,7 @@
 from db import db
 from werkzeug.contrib.cache import SimpleCache
 from utils import dateToJS
+import json
 
 cache = SimpleCache()
 
@@ -23,11 +24,14 @@ def query(userkey):
         pi = float(record[3])
 
         # Three different series of data for the graph purpose
+        print json.dumps([date, down])
         downs.append([date, down])
         ups.append([date, up])
         pings.append([date, pi])
 
+    print json.dumps(downs)
     results = [downs, ups, pings]
+    print ''
 
     # save to cache
-    cache.set('results', results)
+    cache.set('results', results, 0)

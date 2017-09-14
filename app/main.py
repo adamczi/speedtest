@@ -6,9 +6,8 @@ request, abort, redirect
 import json
 import datetime
 from decimal import *
-# from werkzeug.contrib.cache import SimpleCache
 
-from psycopg2 import DataError
+# from psycopg2 import DataError
 from config import SECRET_KEY, DEBUG
 from utils import messages, validate, loggedIn, Record, whoLoggedIn
 from query import query, cache
@@ -28,7 +27,7 @@ from auth import authentication
 app.register_blueprint(authentication)
 
 
-# just a random mainpage
+# just a mainpage
 @app.route("/")
 def itWorks():
     return "aXQgd29ya3Mh=="
@@ -44,7 +43,7 @@ def getValues():
                     key = request.json.get('api'),
                     username = request.json.get('username'))
 
-    print record.timestamp, record.download, record.upload, record.ping, record.key, record.username
+    # print record.timestamp, record.download, record.upload, record.ping, record.key, record.username
 
     # Save into the DB
     result = saveToDatabase(record)
@@ -88,7 +87,8 @@ def stats():
 def userPanel():
     c = cache.get('results')
     return render_template('userPanel.html', downs = c[0], ups = c[1],
-                           pings = c[2], username = session['username'])
+                           pings = c[2], username = session['username'],
+                           loggedIn = True)
 
 
 @app.route('/manual')

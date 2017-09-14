@@ -116,7 +116,9 @@ def alreadyLogged(func):
 def whoLoggedIn(func):
     @wraps(func)
     def loginCheck(username, *args):
-        if 'username' not in session or username != session['username']:
-            return redirect(url_for('stats'))
+        if 'username' not in session:
+            return redirect(url_for('authentication.login'))
+        elif username != session['username']:
+            return redirect('user/'+session['username'])
         return func(*args)
     return loginCheck

@@ -17,6 +17,7 @@
             <a href="/manual" class="btn btn-default" style="float:right">help</a>
         {% else %}
             <h6 class="well well-sm" style="float:left"><a href="/login">back</a></h6>
+            <a href="/login" class="btn btn-default" style="float:right">login</a>
             <a href="/manual" class="btn btn-default" style="float:right">help</a>
         {% endif %}
 
@@ -125,8 +126,8 @@
 
                         <p>The server will respond with a status code:
                             <ul>
-                                <li>200 - success, record created</li>
-                                <li>203 - test and data validation success. No
+                                <li>201 - success, record created</li>
+                                <li>202 - test and data validation success. No
                                     record created</li>
                                 <li>400 - bad request, parameters' names might
                                     be incorrect</li>
@@ -161,7 +162,7 @@ python /usr/lib/python2.7/site-packages/speedtest-cli.py --no-pre-allocate --sha
                         be scheduled to run every 6 hours:
                         <pre><code class="language-bash">$ crontab -e
 
-0 0/6 * * * /root/speedtest.sh</code></pre>
+0 */6 * * * /root/speedtest.sh</code></pre>
                         <span class="text-danger">Note: the server won't allow
                         you to save tests more often than 15 minutes</span>
                         </p>

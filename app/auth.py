@@ -9,6 +9,7 @@ authentication = Blueprint('authentication',
                            __name__,
                            template_folder='templates/authentication')
 
+
 # Route to login page
 @authentication.route("/login", methods=["POST", "GET"])
 @alreadyLogged
@@ -50,7 +51,7 @@ def logout():
     return redirect(url_for('authentication.login'))
 
 
-@authentication.route('/')
+# @authentication.route('/')
 @loggedIn
 def passwordChange():
     bcrypt = Bcrypt(current_app)
@@ -61,6 +62,7 @@ def passwordChange():
             auth = db.fetchone(userTable,
                        fields=['password'],
                        where=('name = %s', [session['username']]))
+
             # If correct, generate hash for new one and update DB
             if bcrypt.check_password_hash(auth.password,
                                           request.form['oldPassword']):
@@ -70,6 +72,8 @@ def passwordChange():
                           where=('name = %s', [session['username']]))
                 db.commit()
                 messages('200')
+
             else: # Invalid old password (hashes mismatch)
                 messages('401')
+                
         return redirect(url_for('userPanel'))
