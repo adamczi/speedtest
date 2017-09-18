@@ -42,29 +42,25 @@
         </div>
 
         <!-- The main content text -->
-        <div class="center-content">
+        <div class="center-content" id="speeds">
             <div id="userpanel-info">
                 <div id="table-layout">
 
                     <div class="user-panel-square">
                         <div class="well">
-                            <!-- <div :av="setJson({{downs}})"></div> -->
-                            <p>records: {{records}}</p>
-                            <p>first record: {{startDate}}</p>
-                            <p>last record: {{lastDate}}</p>
-                            <p><a href="#latest-records">latest records</a></p>
+                            <p>records:</p>
+                            <p>total: <numberscount :table='{{downs}}'></numberscount></p>
+                            <p>first record: <firstdate :table='{{downs}}'></firstdate></p>
+                            <p>last record: <lastdate :table='{{downs}}'></lastdate></p>
                         </div>
                     </div>
 
                     <div class="user-panel-square">
-                        <div class="well" id="speeds">
-                            <p>averages: </p>
-                            <div :av="setJson({{downs}})"></div>
-                            <p>download: [[average]]</p>
-                            <div :av="setJson({{ups}})"></div>
-                            <p>upload: [[average]]</p>
-                            <div :av="setJson({{pings}})"></div>
-                            <p>ping: [[average]]</p>
+                        <div class="well">
+                            <p>averages:</p> <!-- <div :av="setJson({{downs}})"></div> -->
+                            <p>download: <numbersaverage :table='{{downs}}'></numbersaverage></p>
+                            <p>upload: <numbersaverage :table='{{ups}}'></numbersaverage></p>
+                            <p>ping: <numbersaverage :table='{{pings}}'></numbersaverage></p>
                         </div>
                     </div>
                 </div>
