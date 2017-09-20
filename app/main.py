@@ -41,7 +41,9 @@ def getValues():
                     upload = request.json.get('upload'),
                     ping = request.json.get('ping'),
                     key = request.json.get('api'),
-                    username = request.json.get('username'))
+                    username = request.json.get('username'),
+                    ip = request.json.get('ip'),
+                    provider = request.json.get('provider'))
 
     # print record.timestamp, record.download, record.upload, record.ping, record.key, record.username
 
@@ -64,7 +66,9 @@ def saveToDatabase(record):
                    "download": record.download,
                    "upload": record.upload,
                    "ping": record.ping,
-                   "api": record.key})
+                   "api": record.key,
+                   "ip": record.ip,
+                   "provider": record.provider})
         db.commit()
     return 201
 
@@ -77,8 +81,8 @@ def stats():
 
     c = cache.get('results')
 
-    return render_template('stats.html', downs = c[0], ups = c[1],
-                           pings = c[2], username = session['username'])
+    return render_template('stats.html', downs = c[0], ups = c[1], pings = c[2],
+                           username = session['username'])
 
 
 # To do: user panel with statistics, passwd change etc
@@ -88,7 +92,7 @@ def userPanel():
     c = cache.get('results')
     return render_template('userPanel.html', downs = c[0], ups = c[1],
                            pings = c[2], username = session['username'],
-                           loggedIn = True)
+                           isp = c[3], loggedIn = True)
 
 
 @app.route('/manual')

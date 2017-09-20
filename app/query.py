@@ -9,7 +9,8 @@ cache = SimpleCache()
 def query(userkey):
     with db:
         statistics = db.fetchall('data',
-                                 fields=['datetime','download','upload','ping'],
+                                 fields=['datetime','download','upload','ping',
+                                         'ip', 'provider'],
                                  where=('api = %s', [userkey]),
                                  order=['datetime', 'ASC'])
 
@@ -17,6 +18,7 @@ def query(userkey):
     ups = []
     downs = []
     pings = []
+
     for record in statistics:
         date = dateToJS(record[0]) # TO DO: timezone correction (currently GMT)
         down = float(record[1])
@@ -24,14 +26,14 @@ def query(userkey):
         pi = float(record[3])
 
         # Three different series of data for the graph purpose
-        print json.dumps([date, down])
         downs.append([date, down])
         ups.append([date, up])
         pings.append([date, pi])
 
-    print json.dumps(downs)
-    results = [downs, ups, pings]
-    print ''
+    ip = statistics[len(statistics)-1][4]
+    provider = statistics[len(statistics)-1][5]
+
+    results = [downs, ups, pings, ['1234', provider]]
 
     # save to cache
     cache.set('results', results, 0)
