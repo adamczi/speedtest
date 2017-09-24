@@ -1,6 +1,7 @@
 window.onload = function () {
 var a = performance.now();
 
+// utilities
     var computeAverage = function(data) {
         let sum = 0;
         for (var i=0; i < data.length; i++) {
@@ -10,7 +11,6 @@ var a = performance.now();
 
         return average;
     }
-
 
     var computeDates = function(data) {
         let firstDate = lastDate = 0;
@@ -28,7 +28,7 @@ var a = performance.now();
     }
 
 
-// Main component for speed data and date and it's extensions
+// Component for viewing speed data (top right)
     var numbers = Vue.component('numbers', {
         data: function () {
             return {
@@ -57,7 +57,7 @@ var a = performance.now();
                     <p>ping: {{ping}}</p></div>'
     })
 
-
+// Component for viewing dates (top left)
     var dates = Vue.component('dates', {
         data: function () {
             return {
@@ -86,24 +86,26 @@ var a = performance.now();
     })
 
 
-    // Component for IP/ISP data and extensions
+// Component for the last IP/ISP data (bottom left and right)
     var isp = Vue.component('isp', {
         data: function() {
             return {
-                IspIp: this.$parent.cacheTables[3]
+                ips: this.$parent.cacheTables[3],
+                providers: this.$parent.cacheTables[4]
             }
         },
         computed: {
-            // props: ['isp'],
             name: function () {
-                return this.IspIp[1];
+                let l = this.providers.length-1;
+                return this.providers[l][1];
             },
             ip: function () {
-                return this.IspIp[0];
+                let l = this.ips.length-1;
+                return this.ips[l][1];
             }
         }
     })
-
+// Extensions of above isp component
     var ispName = isp.extend({
         template: '<p>ISP: {{name}}</p>'
     })
@@ -115,15 +117,35 @@ var a = performance.now();
     Vue.component('ip', ip)
 
 
-
+// Component for table tab
     var valuetable = Vue.component('valuetable', {
         data: function () {
+            let downloads = this.$parent.cacheTables[0];
+            let uploads = this.$parent.cacheTables[1];
+            let pings = this.$parent.cacheTables[2];
+            let tabledata = [];
+
+            for (let i = 0; i < downloads.length; i++) {
+                // Convert date to ISO format
+                let d = new Date(downloads[i][0]).toISOString();
+                tabledata.push({
+                    key: i+1,
+                    value: [d,
+                            downloads[i][1],
+                            uploads[i][1],
+                            pings[i][1]]
+                })
+            }
+            // Show only last 5 records
+            if (tabledata.length > 5) {
+                tabledata = tabledata.slice(-5)
+            }
+
             return {
-                downloads: this.$parent.cacheTables[0],
-                uploads: this.$parent.cacheTables[1],
-                pings: this.$parent.cacheTables[2]
+                tabledata: tabledata
             }
         },
+
         template: '<table class="table table-striped table-hover ">\
                     <thead>\
                         <tr>\
@@ -136,19 +158,18 @@ var a = performance.now();
                     </thead>\
                           \
                       <tbody>\
-                        <tr v-for="item in downloads">\
-                            <td>1</td>\
-                            <td>{{item[0]}} </td>\
-                            <td>{{item[1]}} </td>\
-                            <td>{{item[1]}} </td>\
-                            <td>{{item[1]}} </td>\
+                        <tr v-for="item in tabledata">\
+                            <td>{{item.key}}</td>\
+                            <td>{{item.value[0]}} </td>\
+                            <td>{{item.value[1]}} </td>\
+                            <td>{{item.value[2]}} </td>\
+                            <td>{{item.value[3]}} </td>\
                         </tr>\
                     </tbody>\
                   </table>'
     })
 
-
-
+// The main Vue app
     var app = new Vue ({
         delimiters: ["<%","%>"],
         el: '#speeds',
@@ -156,6 +177,7 @@ var a = performance.now();
             cacheTables: null
         },
         beforeMount: function () {
+            // Get Flask data from div attribute
             this.cacheTables = this.$el.attributes['my-data'].value;
             this.cacheTables = JSON.parse(this.cacheTables.replace(/'/g, '"'));
         },

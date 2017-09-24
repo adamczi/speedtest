@@ -13,6 +13,8 @@ from utils import messages, validate, loggedIn, Record, whoLoggedIn
 from query import query, cache
 import os
 import re
+import tempfile
+import csv
 import psycopg2
 import pg_simple
 
@@ -72,6 +74,7 @@ def saveToDatabase(record):
         db.commit()
     return 201
 
+
 # This route shows his/her graph to the logged in user
 @app.route("/stats")
 @loggedIn
@@ -85,16 +88,33 @@ def stats():
                            username = session['username'])
 
 
-# To do: user panel with statistics, passwd change etc
+# To do: passwd change etc, data and account removal
+# To do: leaflet map with geolocalised IP
 @app.route('/user/<username>')
 @whoLoggedIn
 def userPanel():
     c = cache.get('results')
-    print type(c)
-    return render_template('userPanel.html', downs = c[0], ups = c[1],
-                           pings = c[2], username = session['username'],
-                           isp = c[3], records = c, loggedIn = True)
-    # return render_template('userPanel.html', username = session['username'], downs = c[0], c_records = c, loggedIn = True)
+    return render_template('userPanel.html', records = c, loggedIn = True,
+                           username = session['username'])
+
+
+@app.route('/user/download')
+@loggedIn
+def downloadTable():
+    if cache.get('results') is None and 'refresh' not in session:
+        query(session['user'])
+    c = cache.get('results')
+
+    with tempfile.NamedTemporaryFile(suffix=".csv") as tmp:
+        for i in range(len(c[0])):
+            row = ",".join([str(c[0][i][0]),
+                            str(c[0][i][1]),
+                            str(c[1][i][1]),
+                            str(c[2][i][1]),
+                            str(c[3][i][1]),
+                            str(c[4][i][1])])
+            tmp.write(row+'\n')
+        return send_file(tmp.name, as_attachment=True, attachment_filename='survey.csv')
 
 
 @app.route('/manual')
@@ -109,6 +129,7 @@ def manual():
     return render_template('manual.html',
                            loggedIn = loggedIn,
                            username = username)
+
 
 # Redirect to custom page in case of invalid URL
 @app.errorhandler(404)

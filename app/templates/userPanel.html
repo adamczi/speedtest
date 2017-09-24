@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="{{url_for('static', filename='document.min.js')}}"></script>
-    <script src="https://unpkg.com/vue"></script>
+    <!-- <script src="https://unpkg.com/vue"></script> -->
+    <script src="{{url_for('static', filename='vue.js')}}"></script>
     <script src="{{url_for('static', filename='v_app.js')}}"></script>
-    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}" />
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}"/>
+    <link rel="stylesheet" href="{{url_for('static', filename='bootstrap.css')}}"/>
 
     <meta charset="utf-8">
     <title>{{username}} - user panel</title>
@@ -40,7 +38,6 @@
                 </div>
             </div>
         </div>
-
 
         <!-- The main content text -->
         <div class="center-content" id="speeds" my-data="{{records}}">
@@ -80,13 +77,10 @@
 
 
             <div id="userpanel-latest-records">
-                <!-- insert some vue based table script with last week's postgres data -->
-
-                    <valuetable>
-                    </valuetable>
-                
+                <valuetable>
+                </valuetable>
+                <a href="{{url_for('downloadTable')}}" class="btn btn-success">download data</a>
             </div>
-
 
 
             <div id="userpanel-account">

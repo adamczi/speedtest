@@ -18,22 +18,25 @@ def query(userkey):
     ups = []
     downs = []
     pings = []
+    ips = []
+    providers = []
 
     for record in statistics:
         date = dateToJS(record[0]) # TO DO: timezone correction (currently GMT)
         down = float(record[1])
         up = float(record[2])
         pi = float(record[3])
+        ip = record[4]
+        provider = record[5]
 
         # Three different series of data for the graph purpose
         downs.append([date, down])
         ups.append([date, up])
         pings.append([date, pi])
+        ips.append([date, ip])
+        providers.append([date, provider])
 
-    ip = statistics[len(statistics)-1][4]
-    provider = statistics[len(statistics)-1][5]
-
-    results = [downs, ups, pings, ["1234", provider]]
+    results = [downs, ups, pings, ips, providers]
 
     # save to cache
     cache.set('results', results, 0)
