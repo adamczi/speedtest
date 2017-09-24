@@ -90,9 +90,11 @@ def stats():
 @whoLoggedIn
 def userPanel():
     c = cache.get('results')
+    print type(c)
     return render_template('userPanel.html', downs = c[0], ups = c[1],
                            pings = c[2], username = session['username'],
-                           isp = c[3], loggedIn = True)
+                           isp = c[3], records = c, loggedIn = True)
+    # return render_template('userPanel.html', username = session['username'], downs = c[0], c_records = c, loggedIn = True)
 
 
 @app.route('/manual')

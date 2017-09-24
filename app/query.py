@@ -33,7 +33,7 @@ def query(userkey):
     ip = statistics[len(statistics)-1][4]
     provider = statistics[len(statistics)-1][5]
 
-    results = [downs, ups, pings, ['1234', provider]]
+    results = [downs, ups, pings, ["1234", provider]]
 
     # save to cache
     cache.set('results', results, 0)

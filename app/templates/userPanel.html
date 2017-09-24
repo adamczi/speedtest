@@ -34,32 +34,28 @@
         <div class="side-content">
             <div id="side-panel">
                 <div class="list-group" id="side-list">
-                      <a id="info-list" href="#" class="list-group-item active">info</a>
+                      <a id="info-list" href="#" class="list-group-item active"  my-data="{{records}}">info</a>
                       <a id="latest-list" href="#" class="list-group-item">latest records</a>
                       <a id="account-list" href="#" class="list-group-item">account</a>
                 </div>
             </div>
         </div>
 
+
         <!-- The main content text -->
-        <div class="center-content" id="speeds">
+        <div class="center-content" id="speeds" my-data="{{records}}">
             <div id="userpanel-info">
                 <div id="table-layout">
-
                     <div class="user-panel-square">
                         <div class="well">
-                            <p>records total: <numberscount :table='{{downs}}'></numberscount></p>
-                            <p>first record: <firstdate :table='{{downs}}'></firstdate></p>
-                            <p>last record: <lastdate :table='{{downs}}'></lastdate></p>
+                            <dates></dates>
                         </div>
                     </div>
 
                     <div class="user-panel-square">
                         <div class="well">
-                            <p>averages:</p> <!-- <div :av="setJson({{downs}})"></div> -->
-                            <p>download: <numbersaverage :table='{{downs}}'></numbersaverage></p>
-                            <p>upload: <numbersaverage :table='{{ups}}'></numbersaverage></p>
-                            <p>ping: <numbersaverage :table='{{pings}}'></numbersaverage></p>
+                            <p>averages:</p>
+                            <numbers></numbers>
                         </div>
                     </div>
                 </div>
@@ -67,14 +63,14 @@
                 <div id="table-layout">
                     <div class="user-panel-square">
                         <div class="well">
-                            <p>ISP: <isp-name :ispdata='{{isp}}'></isp-name></p>
+                            <isp-name></isp-name>
                         </div>
                     </div>
 
                     <div class="user-panel-square">
                         <div class="well">
-                            <p>IP: <ip :ispdata='{{isp}}'></ip></p>
-                            <p>Geolocation:</p>
+                            <ip></ip>
+                            <p>Geolocation: //a map here</p>
                             <p>{{geolocation_1}}</p>
                             <p>{{geolocation_2}}</p>
                         </div>
@@ -85,26 +81,10 @@
 
             <div id="userpanel-latest-records">
                 <!-- insert some vue based table script with last week's postgres data -->
-                <table class="table table-striped table-hover ">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>date</th>
-                      <th>download</th>
-                      <th>ping</th>
-                      <th>ip</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="">
-                      <td>1</td>
-                      <td>Column content</td>
-                      <td>Column content</td>
-                      <td>Column content</td>
-                      <td>Column content</td>
-                    </tr>
-                  </tbody>
-                </table>
+
+                    <valuetable>
+                    </valuetable>
+                
             </div>
 
 
@@ -159,7 +139,6 @@
                 </div>
 
             </div>
-
         </div>
 
     </div>
