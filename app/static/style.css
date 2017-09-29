@@ -82,6 +82,14 @@
     width: auto;
 }
 
+#userpanel-latest-records {
+    padding-bottom: 2rem;
+}
+
+#map {
+    height: 75%;
+}
+
 .user-panel-square {
     /*position: relative;*/
     width: 30rem;

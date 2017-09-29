@@ -1,6 +1,6 @@
 # speedtest
 
-this is an initial stage of the app. will work in future.
+in progress.
 
 tasks:
 
@@ -8,5 +8,4 @@ tasks:
 - based on Flask/Nginx + Postgres
 - works as API - client who wants to be monitored has a script in his cron (like your router on openwrt)
 - access through api key - each user can display his own graph/stats
-- graphs are calculated using highcharts.com
 - site task: deploy the app using docker

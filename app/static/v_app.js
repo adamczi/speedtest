@@ -1,5 +1,5 @@
 window.onload = function () {
-var a = performance.now();
+// var a = performance.now();
 
 // utilities
     var computeAverage = function(data) {
@@ -112,7 +112,31 @@ var a = performance.now();
     Vue.component('isp-name', ispName)
 
     var ip = isp.extend({
-        template: '<p>IP: {{ip}}</p>'
+        template: '<p>IP: <span id="ip">{{ip}}</span></p>',
+        // data: function () {
+        //     return {
+        //         v_map: false
+        //     }
+        // },
+        methods: {
+            map: function() {
+                // {attribution: '&copy; <a href="http://osm.org/copyright" title="OpenStreetMap" target="_blank">OpenStreetMap</a>'}).addTo(ipmap);
+                v_map = new L.Map('map');
+
+            	var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+            	// var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
+            	var osm = new L.TileLayer(osmUrl, {minZoom: 8, maxZoom: 12});//, attribution: osmAttrib});
+                v_map.zoomControl.remove();
+            	v_map.setView(new L.LatLng(51.3, 0.7),9);
+            	v_map.addLayer(osm);
+            }
+        },
+        // ready: function() {
+        //     this.map();
+        // }
+        mounted() {
+            this.map();
+        }
     })
     Vue.component('ip', ip)
 
@@ -137,8 +161,8 @@ var a = performance.now();
                 })
             }
             // Show only last 5 records
-            if (tabledata.length > 5) {
-                tabledata = tabledata.slice(-5)
+            if (tabledata.length > 10) {
+                tabledata = tabledata.slice(-10)
             }
 
             return {
@@ -180,11 +204,12 @@ var a = performance.now();
             // Get Flask data from div attribute
             this.cacheTables = this.$el.attributes['my-data'].value;
             this.cacheTables = JSON.parse(this.cacheTables.replace(/'/g, '"'));
+
         },
 
     });
 
-var b = performance.now();
+// var b = performance.now();
 // alert('It took ' + (b - a) + ' ms.');
 
 }

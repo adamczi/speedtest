@@ -2,20 +2,25 @@
 <html lang="en">
 <head>
     <script src="{{url_for('static', filename='document.min.js')}}"></script>
-    <!-- <script src="https://unpkg.com/vue"></script> -->
-    <script src="{{url_for('static', filename='vue.js')}}"></script>
+    <script src="https://unpkg.com/vue"></script>
+    <!-- <script src="{{url_for('static', filename='vue.js')}}"></script> -->
     <script src="{{url_for('static', filename='v_app.js')}}"></script>
     <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}"/>
     <link rel="stylesheet" href="{{url_for('static', filename='bootstrap.css')}}"/>
-
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
+       integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
+       crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
+    integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
+    crossorigin=""></script>
     <meta charset="utf-8">
     <title>{{username}} - user panel</title>
 </head>
 <body>
 
-    <!-- Top bar containgin user link and help/logout buttons -->
+    <!-- Top bar containing user link and help/logout buttons -->
     <div id="stats-nav-bar">
-            <h6 class="well well-sm" style="float:left"><a href="/user/{{username}}">user:{{username}}</a></h6>
+            <h6 class="well well-sm" style="float:left"><a href="/stats">user:{{username}}</a></h6>
             <a href="/logout" class="btn btn-default" style="float:right">logout</a>
             <a href="/manual" class="btn btn-default" style="float:right">help</a>
     </div>
@@ -67,9 +72,7 @@
                     <div class="user-panel-square">
                         <div class="well">
                             <ip></ip>
-                            <p>Geolocation: //a map here</p>
-                            <p>{{geolocation_1}}</p>
-                            <p>{{geolocation_2}}</p>
+                            <div id="map"></div>
                         </div>
                     </div>
                 </div>
@@ -79,7 +82,7 @@
             <div id="userpanel-latest-records">
                 <valuetable>
                 </valuetable>
-                <a href="{{url_for('downloadTable')}}" class="btn btn-success">download data</a>
+                <a id="download" href="{{url_for('downloadTable')}}" class="btn btn-success">download data</a>
             </div>
 
 
@@ -89,8 +92,8 @@
                     <div class="user-panel-square">
                         <div class="well">
                             <p>account name: {{username}}</p>
-                            <p>register date: {{registerDate}}</p>
-                            <p>API key: {{key}}</p>
+                            <p>registration date: {{registerDate}}</p>
+                            <p>API key: <span class="text-primary" id="key" onclick="showKey({{key}})">click to show</span></p>
                             <p></p>
                         </div>
                     </div>
@@ -154,6 +157,16 @@ $(document).ready(function(){
     });
 });
 </script>
+
+
+<script>
+    // Unhide API key
+    function showKey(key) {
+        document.getElementById("key").innerHTML=key;
+    }
+</script>
+
+
 
 </body>
 </html>

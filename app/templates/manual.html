@@ -116,10 +116,12 @@
 "download":downloadSpeed,
 "upload":uploadSpeed,
 "ping":pingTime,
-"username":yourUsername</code></pre>
+"username":yourUsername,
+"ip":yourIP,
+"provider":yourISP</code></pre>
                         <p>The final curl request could therefore look like:</p>
 
-                        <pre><code class="language-bash">curl -iX POST -H "Content-Type: application/json" -d '{"timestamp":"1927-02-19,06:03:50","api":"randomvaluehere","upload":"10.25","download":"27.31","ping":"2.33", "username":"user123"'} http://ip_addr/api</code></pre>
+                        <pre><code class="language-bash">curl -iX POST -H "Content-Type: application/json" -d '{"timestamp":"1927-02-19,06:03:50","api":"randomvaluehere","upload":"10.25","download":"27.31","ping":"2.33", "username":"user123", "ip":"0.0.0.0", "provider":"some corporation"'} http://ip_addr/api</code></pre>
 
                         <p>and if the username exists and correct API key was
                         provided, the record will be added to the database.</p>
@@ -164,7 +166,7 @@ python /usr/lib/python2.7/site-packages/speedtest-cli.py --no-pre-allocate --sha
 
 0 */6 * * * /root/speedtest.sh</code></pre>
                         <span class="text-danger">Note: the server won't allow
-                        you to save tests more often than 15 minutes</span>
+                        you to save tests more often than every 15 minutes</span>
                         </p>
                     </div>
                 </div>
@@ -178,8 +180,9 @@ python /usr/lib/python2.7/site-packages/speedtest-cli.py --no-pre-allocate --sha
                     <img src="{{url_for('static', filename='graph1.png')}}">
                     <p>Highcharts allow you to download the graph as JPG, PNG,
                     PDF or SVG file. You may also zoom inside the graph.</p>
-                    <p>It'll be possible as well to download the data as a .csv
-                    table in your user panel.</p>
+                    <p>In your user panel you can view the last 10 saved records
+                    and download the entire data as CSV:</p>
+                    <img src="{{url_for('static', filename='table1.png')}}">
                 </div>
 
 

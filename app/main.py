@@ -95,7 +95,7 @@ def stats():
 def userPanel():
     c = cache.get('results')
     return render_template('userPanel.html', records = c, loggedIn = True,
-                           username = session['username'])
+                           username = session['username'], key = session['user'])
 
 
 @app.route('/user/download')
@@ -105,7 +105,10 @@ def downloadTable():
         query(session['user'])
     c = cache.get('results')
 
-    with tempfile.NamedTemporaryFile(suffix=".csv") as tmp:
+    with tempfile.NamedTemporaryFile() as tmp:
+        filename = session['username']+'.csv'
+        headers = 'timestamp,download,upload,ping,ip,provider'
+        tmp.write(headers+'\n')
         for i in range(len(c[0])):
             row = ",".join([str(c[0][i][0]),
                             str(c[0][i][1]),
@@ -114,7 +117,10 @@ def downloadTable():
                             str(c[3][i][1]),
                             str(c[4][i][1])])
             tmp.write(row+'\n')
-        return send_file(tmp.name, as_attachment=True, attachment_filename='survey.csv')
+
+        return send_file(tmp.name,
+                         as_attachment=True,
+                         attachment_filename=filename)
 
 
 @app.route('/manual')
